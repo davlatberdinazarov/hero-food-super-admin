@@ -11,52 +11,45 @@ import {
 } from "@material-tailwind/react";
 import $api from "../../utils/api";
 import { sweetAlert } from "../../utils/sweetalert";
-import { useParams } from "react-router-dom";
 import { useRenderStore } from "../../stores/rendersStore";
 
-export function AddCityDialog() {
+export function AddCategoryDialog() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
-  const [size, setSize] = useState("");
+  const [luxuryRate, setLuxuryRate] = useState("");
   const [errors, setErrors] = useState({});
-  const { regionId } = useParams();
-  const [loading, setLoading] = useState(false);
-
-  // Move the Zustand hook call to the top level of the component
-  const { cityRenderStore } = useRenderStore();
+  const { categoryRenderStore } = useRenderStore();
 
   const handleOpen = () => setOpen(!open);
 
   const handleSubmit = async () => {
     const options = {
       name,
-      size,
-      regionId,
+      luxuryRate,
     };
 
     // Simple client-side validation for empty fields
     const newErrors = {};
-    if (!name) newErrors.name = "City name is required";
-    if (!size) newErrors.size = "City size is required";
+    if (!name) newErrors.name = "Category name is required";
+    if (!luxuryRate) newErrors.luxuryRate = "Luxury rate is required";
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
     try {
-      const response = await $api.post(`/cities/create-city`, options);
+      const response = await $api.post(`/categories/create`, options);
       if (response.status === 201) {
         setOpen(false);
-        sweetAlert("City added successfully", "success");
-        cityRenderStore();  // Now you can call it here without issues
+        sweetAlert("Category added successfully", "success");
+        categoryRenderStore(); // Render store to update category list
+        // Reset form fields after successful submission
+        setName("");
+        setLuxuryRate("");
+        setErrors({});
       } else {
-        sweetAlert("Failed to add city", "error");
+        sweetAlert("Failed to add category", "error");
       }
-
-      // Reset form fields after successful submission
-      setName("");
-      setSize("");
-      setErrors({});
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "Error adding city";
+      const errorMessage = error.response?.data?.message || "Error adding category";
       sweetAlert(errorMessage, "error");
       setOpen(false);
     }
@@ -65,7 +58,7 @@ export function AddCityDialog() {
   return (
     <>
       <Button onClick={handleOpen} variant="gradient">
-        Add City
+        Add Category
       </Button>
       <Dialog
         size="sm"
@@ -76,10 +69,10 @@ export function AddCityDialog() {
           unmount: { scale: 0.9, y: -100 },
         }}
       >
-        <DialogHeader>Add New City</DialogHeader>
+        <DialogHeader>Add New Category</DialogHeader>
         <DialogBody className="space-y-4">
           <Input
-            label="City Name"
+            label="Category Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             error={!!errors.name}
@@ -90,17 +83,19 @@ export function AddCityDialog() {
           )}
 
           <Select
-            label="City Size"
-            value={size}
-            onChange={(e) => setSize(e)}
-            error={!!errors.size}
+            label="Luxury Rate"
+            value={luxuryRate}
+            onChange={(value) => setLuxuryRate(value)}
+            error={!!errors.luxuryRate}
           >
-            <Option value="SMALL">SMALL</Option>
-            <Option value="MEDIUM">MEDIUM</Option>
-            <Option value="BIG">BIG</Option>
+            <Option value="1">1</Option>
+            <Option value="2">2</Option>
+            <Option value="3">3</Option>
+            <Option value="4">4</Option>
+            <Option value="5">5</Option>
           </Select>
-          {errors.size && (
-            <p className="text-red-500 text-sm">{errors.size}</p>
+          {errors.luxuryRate && (
+            <p className="text-red-500 text-sm">{errors.luxuryRate}</p>
           )}
         </DialogBody>
         <DialogFooter>

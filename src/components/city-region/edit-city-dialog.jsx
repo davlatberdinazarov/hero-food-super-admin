@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Dialog,
@@ -8,22 +8,39 @@ import {
   Input,
   Select,
   Option,
+  IconButton,
 } from "@material-tailwind/react";
 import $api from "../../utils/api";
 import { sweetAlert } from "../../utils/sweetalert";
 import { useParams } from "react-router-dom";
 import { useRenderStore } from "../../stores/rendersStore";
+import { FaPencilAlt } from "react-icons/fa";
 
-export function AddCityDialog() {
+export function EditCityDialog({ data }) {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [size, setSize] = useState("");
+  const [name, setName] = useState(data.name);
+  const [size, setSize] = useState(data.size);
   const [errors, setErrors] = useState({});
   const { regionId } = useParams();
-  const [loading, setLoading] = useState(false);
 
-  // Move the Zustand hook call to the top level of the component
+  // Zustand store for re-rendering after update
   const { cityRenderStore } = useRenderStore();
+
+  // Fetch city data when the dialog is opened
+  useEffect(() => {
+    const fetchCityData = async () => {
+      try {
+        const response = await $api.get(`/cities/${data.id}`);
+        const city = response.data;
+        setName(city.name);
+        setSize(city.size);
+      } catch (error) {
+        console.error("Failed to fetch city data", error);
+      }
+    };
+
+    if (open && data.id) fetchCityData();
+  }, [open, data.id]);
 
   const handleOpen = () => setOpen(!open);
 
@@ -31,10 +48,9 @@ export function AddCityDialog() {
     const options = {
       name,
       size,
-      regionId,
     };
 
-    // Simple client-side validation for empty fields
+    // Simple client-side validation
     const newErrors = {};
     if (!name) newErrors.name = "City name is required";
     if (!size) newErrors.size = "City size is required";
@@ -42,21 +58,17 @@ export function AddCityDialog() {
     if (Object.keys(newErrors).length > 0) return;
 
     try {
-      const response = await $api.post(`/cities/create-city`, options);
-      if (response.status === 201) {
+      const response = await $api.patch(`/cities/update/${data.id}`, options);
+      if (response.status === 200) {
         setOpen(false);
-        sweetAlert("City added successfully", "success");
-        cityRenderStore();  // Now you can call it here without issues
+        sweetAlert("City updated successfully", "success");
+        cityRenderStore();
       } else {
-        sweetAlert("Failed to add city", "error");
+        sweetAlert("Failed to update city", "error");
       }
-
-      // Reset form fields after successful submission
-      setName("");
-      setSize("");
-      setErrors({});
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "Error adding city";
+      const errorMessage =
+        error.response?.data?.message || "Error updating city";
       sweetAlert(errorMessage, "error");
       setOpen(false);
     }
@@ -64,9 +76,9 @@ export function AddCityDialog() {
 
   return (
     <>
-      <Button onClick={handleOpen} variant="gradient">
-        Add City
-      </Button>
+      <IconButton onClick={handleOpen} variant="button">
+        <FaPencilAlt className="text-[17px]" />
+      </IconButton>
       <Dialog
         size="sm"
         open={open}
@@ -76,7 +88,7 @@ export function AddCityDialog() {
           unmount: { scale: 0.9, y: -100 },
         }}
       >
-        <DialogHeader>Add New City</DialogHeader>
+        <DialogHeader>Update City</DialogHeader>
         <DialogBody className="space-y-4">
           <Input
             label="City Name"
@@ -85,9 +97,7 @@ export function AddCityDialog() {
             error={!!errors.name}
             success={!errors.name && name}
           />
-          {errors.name && (
-            <p className="text-red-500 text-sm">{errors.name}</p>
-          )}
+          {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
 
           <Select
             label="City Size"
@@ -99,9 +109,7 @@ export function AddCityDialog() {
             <Option value="MEDIUM">MEDIUM</Option>
             <Option value="BIG">BIG</Option>
           </Select>
-          {errors.size && (
-            <p className="text-red-500 text-sm">{errors.size}</p>
-          )}
+          {errors.size && <p className="text-red-500 text-sm">{errors.size}</p>}
         </DialogBody>
         <DialogFooter>
           <Button
