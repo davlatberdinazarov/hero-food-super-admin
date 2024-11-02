@@ -13,12 +13,15 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import MainPage from "./pages/MainPage";
 import MyProfile from "./pages/MyProfile";
-import FoodEstablishments from "./pages/FoodEstablishments";
 import Category from "./pages/Category";
 import Users from "./pages/Users";
 import Comments from "./pages/Comments";
 import RegionCities from "./pages/RegionsCities/RegionCities";
 import Cities from "./pages/RegionsCities/Cities";
+import FoodEstablishments from "./pages/FoodEstablishments/FoodEstablishments";
+import MenuCategory from "./pages/FoodEstablishments/MenuCategory";
+import { Promotions } from "./pages/FoodEstablishments/Promotions";
+import Foods from "./pages/FoodEstablishments/Foods";
 
 
 const AppRoutes = () => {
@@ -57,6 +60,9 @@ const AppRoutes = () => {
             <Route path="regions" element={<RegionCities/>} />
             <Route path="regions/:regionId" element={<Cities />} />
             <Route path="food_establishment" element={<FoodEstablishments/>} />
+            <Route path="food_establishment/:foodEsId/menu_category" element={<MenuCategory/>} />
+            <Route path="food_establishment/:foodEsId/menu_category/:menuId/foods" element={<Foods/>} />
+            <Route path="food_establishment/:foodEsId/promotion" element={<Promotions/>} />
             <Route path="category" element={<Category/>} />
             <Route path="myprofile" element={<MyProfile />} />
             <Route path="users" element={<Users/>} />

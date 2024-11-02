@@ -8,30 +8,32 @@ import {
   Input,
   Select,
   Option,
+  IconButton,
 } from "@material-tailwind/react";
 import { FiUploadCloud } from "react-icons/fi";
 import { sweetAlert } from "../../utils/sweetalert";
 import $api from "../../utils/api";
 import useEstablishmentsStore from "../../stores/establishmentsStore";
-import { Spinner } from "@material-tailwind/react"; // Import a Spinner for loading indication
+import { Spinner } from "@material-tailwind/react";
+import { FaPencilAlt } from "react-icons/fa";
 import { useRenderStore } from "../../stores/rendersStore";
 
-export function AddFoodEstablishment() {
-  const [title, setTitle] = useState("");
-  const [ownerFullName, setOwnerFullName] = useState("");
-  const [address, setAddress] = useState("");
-  const [workingTime, setWorkingTime] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [sizeOfEstablishment, setSizeOfEstablishment] = useState("");
+export function EditFoodEstablishment({ data }) {
+  const [title, setTitle] = useState(data?.title || "");
+  const [ownerFullName, setOwnerFullName] = useState(data?.ownerFullName || "");
+  const [address, setAddress] = useState(data?.address || "");
+  const [workingTime, setWorkingTime] = useState(data?.workingTime || "");
+  const [phoneNumber, setPhoneNumber] = useState(data?.phoneNumber || "");
+  const [sizeOfEstablishment, setSizeOfEstablishment] = useState(
+    data?.sizeOfEstablishment || ""
+  );
   const [banner, setBanner] = useState(null);
-  const [loading, setLoading] = useState(false); // Loading state for the image upload
-  const [categoryId, setCategoryId] = useState("");
-  const [cityId, setCityId] = useState("");
-  const [regionId, setRegionId] = useState("");
-  const [open, setOpen] = useState(false); // Added open state for dialog
-  const [errors, setErrors] = useState({}); // Added errors state for validation feedback
-
-  const { foodEstablishmentRenderStore } = useRenderStore();
+  const [loading, setLoading] = useState(false);
+  const [categoryId, setCategoryId] = useState(data?.categoryId || "");
+  const [cityId, setCityId] = useState(data?.cityId || "");
+  const [regionId, setRegionId] = useState(data?.regionId || "");
+  const [errors, setErrors] = useState({});
+  const [open, setOpen] = useState(false);
 
   const {
     regions,
@@ -43,10 +45,13 @@ export function AddFoodEstablishment() {
     clearCities,
   } = useEstablishmentsStore();
 
+  const { foodEstablishmentRenderStore } = useRenderStore();
+
   useEffect(() => {
     fetchRegions();
     fetchCategories();
-  }, [fetchRegions, fetchCategories]);
+    if (regionId) fetchCities(regionId);
+  }, [fetchRegions, fetchCategories, fetchCities, regionId]);
 
   const handleRegionChange = (e) => {
     setRegionId(e);
@@ -56,12 +61,14 @@ export function AddFoodEstablishment() {
   const handleBannerChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setLoading(true); // Set loading state to true
+      setLoading(true);
       setBanner(file);
-      // Simulate upload time delay for demo
-      setTimeout(() => setLoading(false), 1000); // Clear loading after 1 second
+      setTimeout(() => setLoading(false), 1000);
     }
   };
+
+  const handleOpen = () => setOpen((cur) => !cur);
+
 
   const validateForm = () => {
     const newErrors = {};
@@ -97,25 +104,30 @@ export function AddFoodEstablishment() {
     if (banner) formData.append("banner", banner);
 
     try {
-      const response = await $api.post("/food-establishments/create", formData);
-      if (response.status === 201) {
-        sweetAlert("Food establishment added successfully!", "success");
+      const response = await $api.put(
+        `/food-establishments/update/${data.id}`,
+        formData
+      );
+      console.log(response);
+      if (response.status === 200) {
+        sweetAlert("Food establishment updated successfully!", "success");
         setOpen(false);
         clearCities();
-        fetchCities(regionId);
-        foodEstablishmentRenderStore(); // Render store to update food establishment list
+        foodEstablishmentRenderStore(); // Refresh food establishment list
       }
     } catch (error) {
-      console.error("Error creating food establishment:", error);
-      sweetAlert("Failed to add food establishment.", "error");
+      console.error("Error updating food establishment:", error);
+      sweetAlert("Failed to update food establishment.", "error");
     }
   };
 
   return (
-    <>
-      <Button onClick={() => setOpen(true)}>Add Food Establishment</Button>
+    <div>
+      <IconButton onClick={handleOpen}>
+        <FaPencilAlt size={14} />
+      </IconButton>
       <Dialog open={open} size="sm" handler={setOpen}>
-        <DialogHeader>Add Food Establishment</DialogHeader>
+        <DialogHeader>Update Food Establishment</DialogHeader>
         <DialogBody>
           <div className="flex flex-col gap-3">
             <Input
@@ -170,6 +182,7 @@ export function AddFoodEstablishment() {
 
             <Select
               label="Size of Establishment"
+              value={sizeOfEstablishment}
               onChange={(e) => setSizeOfEstablishment(e)}
               error={!!errors.sizeOfEstablishment}
             >
@@ -185,6 +198,7 @@ export function AddFoodEstablishment() {
 
             <Select
               label="Region"
+              value={regionId}
               onChange={handleRegionChange}
               error={!!errors.regionId}
             >
@@ -200,6 +214,7 @@ export function AddFoodEstablishment() {
 
             <Select
               label="City"
+              value={cityId}
               onChange={(e) => setCityId(e)}
               error={!!errors.cityId}
             >
@@ -215,6 +230,7 @@ export function AddFoodEstablishment() {
 
             <Select
               label="Category"
+              value={categoryId}
               onChange={(e) => setCategoryId(e)}
               error={!!errors.categoryId}
             >
@@ -243,126 +259,13 @@ export function AddFoodEstablishment() {
         </DialogBody>
         <DialogFooter>
           <Button className="mr-2" onClick={handleSubmit} disabled={loading}>
-            Submit
+            Update
           </Button>
           <Button color="red" onClick={() => setOpen(false)}>
             Cancel
           </Button>
         </DialogFooter>
       </Dialog>
-    </>
+    </div>
   );
 }
-
-/* 
- <Input
-              label="Title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              error={!!errors.title}
-            />
-            {errors.title && (
-              <p className="text-red-500 text-sm">{errors.title}</p>
-            )}
-
-            <Input
-              label="Owner Full Name"
-              value={ownerFullName}
-              onChange={(e) => setOwnerFullName(e.target.value)}
-              error={!!errors.ownerFullName}
-            />
-            {errors.ownerFullName && (
-              <p className="text-red-500 text-sm">{errors.ownerFullName}</p>
-            )}
-
-            <Input
-              label="Address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              error={!!errors.address}
-            />
-            {errors.address && (
-              <p className="text-red-500 text-sm">{errors.address}</p>
-            )}
-
-            <Input
-              label="Working Time"
-              value={workingTime}
-              onChange={(e) => setWorkingTime(e.target.value)}
-              error={!!errors.workingTime}
-            />
-            {errors.workingTime && (
-              <p className="text-red-500 text-sm">{errors.workingTime}</p>
-            )}
-
-            <Input
-              label="Phone Number"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              error={!!errors.phoneNumber}
-            />
-            {errors.phoneNumber && (
-              <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
-            )}
-
-            <Select
-              label="Size of Establishment"
-              onChange={(e) => setSizeOfEstablishment(e)}
-              error={!!errors.sizeOfEstablishment}
-            >
-              <Option value="small">Small</Option>
-              <Option value="medium">Medium</Option>
-              <Option value="huge">Large</Option>
-            </Select>
-            {errors.sizeOfEstablishment && (
-              <p className="text-red-500 text-sm">
-                {errors.sizeOfEstablishment}
-              </p>
-            )}
-
-            <Select
-              label="Region"
-              onChange={handleRegionChange}
-              error={!!errors.regionId}
-            >
-              {regions.map((region) => (
-                <Option key={region.id} value={region.id}>
-                  {region.name}
-                </Option>
-              ))}
-            </Select>
-            {errors.regionId && (
-              <p className="text-red-500 text-sm">{errors.regionId}</p>
-            )}
-
-            <Select
-              label="City"
-              onChange={(e) => setCityId(e)}
-              error={!!errors.cityId}
-            >
-              {cities.map((city) => (
-                <Option key={city.id} value={city.id}>
-                  {city.name}
-                </Option>
-              ))}
-            </Select>
-            {errors.cityId && (
-              <p className="text-red-500 text-sm">{errors.cityId}</p>
-            )}
-
-            <Select
-              label="Category"
-              onChange={(e) => setCategoryId(e)}
-              error={!!errors.categoryId}
-            >
-              {categories.map((category) => (
-                <Option key={category.id} value={category.id}>
-                  {category.name}
-                </Option>
-              ))}
-            </Select>
-            {errors.categoryId && (
-              <p className="text-red-500 text-sm">{errors.categoryId}</p>
-            )}
-
-*/

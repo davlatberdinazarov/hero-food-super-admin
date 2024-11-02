@@ -38,7 +38,6 @@ export default function CustomDataTable({ data, columns, page, setPage, perPage,
         highlightOnHover // Hover qilinganda satrni belgilash
         customStyles={customStyles} // Maxsus stylelar
       />
-      
     </div>
   );
 }
