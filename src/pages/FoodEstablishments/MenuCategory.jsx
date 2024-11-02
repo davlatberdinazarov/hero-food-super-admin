@@ -3,7 +3,7 @@ import CustomDataTable from "../../lib/CustomDataTable";
 import Loader from "../../lib/Loader";
 import $api from "../../utils/api";
 import { useRenderStore } from "../../stores/rendersStore";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
 import { AddMenuCategoryDialog } from "../../components/men_category/add-menucategory";
 import { EditMenuCategoryDialog } from "../../components/men_category/edit-menucategory";
@@ -49,6 +49,17 @@ function MenuCategoryTable() {
     {
       name: "Food Establishment",
       selector: (row) => row.foodEstablishment?.title || "N/A",
+      sortable: true,
+    },
+    {
+      name: "Foods",
+      selector: (row) => (
+        <div>
+          <Link className=" underline" to={`${row.id}/foods`}>
+            foods
+          </Link>
+        </div>
+      ),
       sortable: true,
     },
     {

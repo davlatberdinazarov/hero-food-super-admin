@@ -1,4 +1,3 @@
-// MainLayout.jsx
 import React, { useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
@@ -28,7 +27,7 @@ export default function MainLayout() {
       if (res.status === 200) {
         const { role } = res.data;
         if (role === "superAdmin") {
-          setProfile(res.data)
+          setProfile(res.data);
         } else {
           handleUnauthorizedAccess();
         }
@@ -54,21 +53,21 @@ export default function MainLayout() {
   return (
     <div className="flex h-screen overflow-hidden bg-gray-100">
       {/* Sidebar */}
-      <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
-
-      {/* Main content area */}
       <div
-        className={`flex-1 flex flex-col transition-all duration-300 ${
-          isCollapsed ? 'ml-20' : 'ml-64'
+        className={`transition-width duration-300 ${
+          isCollapsed ? 'w-20' : 'w-64'
         }`}
       >
+        <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+      </div>
+
+      {/* Main content area */}
+      <div className={`${isCollapsed ? 'w-[calc(100% - 80px)]' : 'w-[calc(100%-316px)]'} flex flex-1 flex-col`}>
         {/* Navbar */}
-        <div>
-          <Navbar/>
-        </div>
+        <Navbar />
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className={` flex-1 overflow-y-auto p-4`}>
           <Outlet />
         </div>
       </div>
