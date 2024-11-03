@@ -21,7 +21,7 @@ export default function Navbar() {
         {/* User Image */}
         <Link to="/myprofile">
           <Avatar
-            src={profile?.image ? `${BASE_URL}/uploads/${profile.image}` : "https://via.placeholder.com/150"} // Construct the image URL
+            src={profile?.image ? `${BASE_URL}/uploads/${profile.image}` : "/image.png"} // Construct the image URL
             alt="User Image"
             size="md"
             className="border border-white"

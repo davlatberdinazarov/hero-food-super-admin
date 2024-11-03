@@ -14,7 +14,6 @@ import NotFound from "./pages/NotFound";
 import MainPage from "./pages/MainPage";
 import MyProfile from "./pages/MyProfile";
 import Category from "./pages/Category";
-import Users from "./pages/Users";
 import Comments from "./pages/Comments";
 import RegionCities from "./pages/RegionsCities/RegionCities";
 import Cities from "./pages/RegionsCities/Cities";
@@ -22,6 +21,7 @@ import FoodEstablishments from "./pages/FoodEstablishments/FoodEstablishments";
 import MenuCategory from "./pages/FoodEstablishments/MenuCategory";
 import { Promotions } from "./pages/FoodEstablishments/Promotions";
 import Foods from "./pages/FoodEstablishments/Foods";
+import Users from "./pages/Users/Users";
 
 
 const AppRoutes = () => {

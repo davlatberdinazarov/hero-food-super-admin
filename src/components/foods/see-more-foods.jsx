@@ -40,7 +40,7 @@ export default function SeeMoreFoods({ data }) {
       <IconButton onClick={handleOpen} variant="text">
         <FaEye className="h-4 w-4" />
       </IconButton>
-      <Dialog size="xs" open={open} handler={handleOpen}>
+      <Dialog size="sm" open={open} handler={handleOpen}>
         <DialogHeader className="justify-between">
           <Typography variant="h5" color="blue-gray">
             Batafsil ma'lumot

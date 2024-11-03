@@ -6,7 +6,7 @@ import { RiLogoutBoxLine } from "react-icons/ri";
 import { Link, useLocation } from 'react-router-dom';
 import { IoLogoReact } from "react-icons/io5";
 
-export default function Sidebar({ isCollapsed, setIsCollapsed }) {
+export default function Sidebar({ isCollapsed, setIsCollapsed, handleLogOut }) {
   const location = useLocation();
 
   const toggleSidebar = () => {
@@ -89,7 +89,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
             <FaCommentAlt className="text-xl" />
             {!isCollapsed && <span className="text-lg">Fikrlar</span>}
           </Link>
-          <li className="flex items-center gap-4 p-2 hover:bg-blue-700 cursor-pointer">
+          <li onClick={handleLogOut} className="flex items-center gap-4 p-2 hover:bg-blue-700 cursor-pointer">
             <RiLogoutBoxLine className="text-xl" />
             {!isCollapsed && <span className="text-lg">Chiqish</span>}
           </li>

@@ -58,7 +58,7 @@ export default function MainLayout() {
           isCollapsed ? 'w-20' : 'w-64'
         }`}
       >
-        <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+        <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} handleLogOut={handleLogOut} />
       </div>
 
       {/* Main content area */}
