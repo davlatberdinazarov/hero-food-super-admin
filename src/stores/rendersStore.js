@@ -20,6 +20,9 @@ export const useRenderStore = create((set) => ({
   promotionRender: 0,
   promotionRenderStore: () => set((state) => ({ promotionRender: state.promotionRender + 1 })),
 
+  detailRender: 0,
+  detailRenderStore: () => set((state) => ({ detailRender: state.detailRender + 1 })),
+
   // Add a new state variable for foods render
   foodsRender: 0,
   foodsRenderStore: () => set((state) => ({ foodsRender: state.foodsRender + 1 })),

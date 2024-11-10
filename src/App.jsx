@@ -22,6 +22,7 @@ import MenuCategory from "./pages/FoodEstablishments/MenuCategory";
 import { Promotions } from "./pages/FoodEstablishments/Promotions";
 import Foods from "./pages/FoodEstablishments/Foods";
 import Users from "./pages/Users/Users";
+import EstablishmentDetail from "./pages/establishmentDetail";
 
 
 const AppRoutes = () => {
@@ -63,6 +64,7 @@ const AppRoutes = () => {
             <Route path="food_establishment/:foodEsId/menu_category" element={<MenuCategory/>} />
             <Route path="food_establishment/:foodEsId/menu_category/:menuId/foods" element={<Foods/>} />
             <Route path="food_establishment/:foodEsId/promotion" element={<Promotions/>} />
+            <Route path="food_establishment/:foodEsId/detail" element={<EstablishmentDetail/>} />
             <Route path="category" element={<Category/>} />
             <Route path="myprofile" element={<MyProfile />} />
             <Route path="users" element={<Users/>} />

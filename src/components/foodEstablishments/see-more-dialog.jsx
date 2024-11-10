@@ -4,7 +4,6 @@ import {
   Dialog,
   DialogHeader,
   DialogBody,
-  DialogFooter,
   IconButton,
   Typography,
 } from "@material-tailwind/react";
@@ -23,6 +22,8 @@ export default function SeeMoreDialog({ data }) {
     address,
     workingTime,
     phoneNumber,
+    telegram,
+    instagram,
     sizeOfEstablishment,
     createdAt,
     city,
@@ -104,7 +105,9 @@ export default function SeeMoreDialog({ data }) {
               </div>
               <div className="w-1/2">
                 <h4 className="text-sm text-gray-600">Shahar</h4>
-                <h1 className="font-semibold text-md">{city.name} ({city.size})</h1>
+                <h1 className="font-semibold text-md">
+                  {city.name} ({city.size})
+                </h1>
               </div>
             </main>
             <main className="flex mt-3">
@@ -118,6 +121,20 @@ export default function SeeMoreDialog({ data }) {
               </div>
             </main>
             <main className="flex mt-3">
+              {telegram && (
+                <div className="w-1/2">
+                  <h4 className="text-sm text-gray-600">Telegram</h4>
+                  <h1 className="font-semibold text-md">{telegram}</h1>
+                </div>
+              )}
+              {instagram && (
+                <div className="w-1/2">
+                  <h4 className="text-sm text-gray-600">Instagram</h4>
+                  <h1 className="font-semibold text-md">{instagram}</h1>
+                </div>
+              )}
+            </main>
+            <main className="flex mt-3">
               <div className="w-1/2">
                 <h4 className="text-sm text-gray-600">Yaratilgan sana</h4>
                 <h1 className="font-semibold text-md">{formattedCreatedAt}</h1>
@@ -128,12 +145,10 @@ export default function SeeMoreDialog({ data }) {
               </div>
             </main>
           </div>
-        </DialogBody>
-        <DialogFooter className="justify-between gap-2">
-          <Button variant="text" onClick={handleOpen}>
+          <Button className="mt-2" variant="text" onClick={handleOpen}>
             Yopish
           </Button>
-        </DialogFooter>
+        </DialogBody>
       </Dialog>
     </div>
   );

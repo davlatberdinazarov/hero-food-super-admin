@@ -114,7 +114,11 @@ function FoodEstablishmentTable() {
                 Promotion
               </Link>
             </MenuItem>
-
+            <MenuItem>
+              <Link className=" w-full" to={`${row.id}/detail`}>
+                Detail
+              </Link>
+            </MenuItem>
             {/* <MenuItem>Menu Item 3</MenuItem> */}
           </MenuList>
         </Menu>

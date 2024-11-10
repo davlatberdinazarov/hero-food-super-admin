@@ -5,6 +5,7 @@ import Loader from "../lib/Loader";
 import { AddCategoryDialog } from "../components/category/add-category-dialog";
 import { DeleteCategoryDialog } from "../components/category/delete-category-dialog";
 import { EditCategoryDialog } from "../components/category/edit-category-dialog";
+import { BASE_URL } from "../utils";
 
 export default function Category() {
   const [categories, setCategories] = useState([]);
@@ -51,20 +52,34 @@ export default function Category() {
 
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center mb-3">
-        <h1 className="text-2xl font-bold mb-4">Categories</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Categories</h1>
         <AddCategoryDialog />
       </div>
-      <div className=" grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {categories.map((category) => (
           <div
             key={category.id}
-            className="flex justify-between col-span-1 items-center space-x-4 p-4 bg-white shadow-md rounded-lg"
+            className="col-span-1 p-4 bg-white shadow-lg rounded-lg flex flex-col items-center space-y-3"
           >
-            <div className="flex gap-4">
-              <span className="text-lg font-semibold">{category.name}</span>
+            {/* Category Image */}
+            {category.image ? (
+              <img
+                src={`${BASE_URL}/uploads/${category.image}`} // adjust the path as needed
+                alt={category.name}
+                className="w-full h-48 object-cover rounded-md"
+              />
+            ) : (
+              <div className="w-full h-48 bg-gray-200 rounded-md flex items-center justify-center text-gray-500">
+                No Image Available
+              </div>
+            )}
+
+            {/* Category Name and Luxury Rate */}
+            <div className="text-center">
+              <h2 className="text-lg font-semibold">{category.name}</h2>
               <span
-                className={`px-3 py-1 rounded-full text-white ${getLuxuryRateColor(
+                className={`inline-block px-3 py-1 mt-2 rounded-full text-white ${getLuxuryRateColor(
                   category.luxuryRate
                 )}`}
               >
@@ -72,7 +87,8 @@ export default function Category() {
               </span>
             </div>
 
-            <div className=" flex gap-2">
+            {/* Action Buttons */}
+            <div className="flex justify-center space-x-3 mt-3">
               <DeleteCategoryDialog id={category.id} />
               <EditCategoryDialog data={category} />
             </div>

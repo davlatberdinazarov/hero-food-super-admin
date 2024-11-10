@@ -40,7 +40,6 @@ export default function Login() {
       }
     } catch (error) {
       console.error("Profilni olishda xatolik:", error);
-      handleLogOut();
     }
   };
 

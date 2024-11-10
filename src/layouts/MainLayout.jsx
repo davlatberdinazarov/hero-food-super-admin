@@ -34,11 +34,8 @@ export default function MainLayout() {
       }
     } catch (error) {
       console.error("Profilni olishda xatolik:", error);
-      handleLogOut();
     }
   };
-
-  console.log(profile);
 
   const handleLogOut = () => {
     localStorage.clear();

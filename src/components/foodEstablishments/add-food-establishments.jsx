@@ -22,6 +22,8 @@ export function AddFoodEstablishment() {
   const [address, setAddress] = useState("");
   const [workingTime, setWorkingTime] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [telegram, setTelegram] = useState("");
+  const [instagram, setInstagram] = useState("");
   const [sizeOfEstablishment, setSizeOfEstablishment] = useState("");
   const [banner, setBanner] = useState(null);
   const [loading, setLoading] = useState(false); // Loading state for the image upload
@@ -90,6 +92,8 @@ export function AddFoodEstablishment() {
     formData.append("address", address);
     formData.append("workingTime", workingTime);
     formData.append("phoneNumber", phoneNumber);
+    formData.append("telegram", telegram);
+    formData.append("instagram", instagram);
     formData.append("sizeOfEstablishment", sizeOfEstablishment);
     formData.append("category", categoryId);
     formData.append("city", cityId);
@@ -118,25 +122,27 @@ export function AddFoodEstablishment() {
         <DialogHeader>Add Food Establishment</DialogHeader>
         <DialogBody>
           <div className="flex flex-col gap-3">
-            <Input
-              label="Title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              error={!!errors.title}
-            />
-            {errors.title && (
-              <p className="text-red-500 text-sm">{errors.title}</p>
-            )}
+            <div className=" flex gap-2">
+              <Input
+                label="Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                error={!!errors.title}
+              />
+              {errors.title && (
+                <p className="text-red-500 text-sm">{errors.title}</p>
+              )}
 
-            <Input
-              label="Owner Full Name"
-              value={ownerFullName}
-              onChange={(e) => setOwnerFullName(e.target.value)}
-              error={!!errors.ownerFullName}
-            />
-            {errors.ownerFullName && (
-              <p className="text-red-500 text-sm">{errors.ownerFullName}</p>
-            )}
+              <Input
+                label="Owner Full Name"
+                value={ownerFullName}
+                onChange={(e) => setOwnerFullName(e.target.value)}
+                error={!!errors.ownerFullName}
+              />
+              {errors.ownerFullName && (
+                <p className="text-red-500 text-sm">{errors.ownerFullName}</p>
+              )}
+            </div>
 
             <Input
               label="Address"
@@ -148,25 +154,41 @@ export function AddFoodEstablishment() {
               <p className="text-red-500 text-sm">{errors.address}</p>
             )}
 
-            <Input
-              label="Working Time"
-              value={workingTime}
-              onChange={(e) => setWorkingTime(e.target.value)}
-              error={!!errors.workingTime}
-            />
-            {errors.workingTime && (
-              <p className="text-red-500 text-sm">{errors.workingTime}</p>
-            )}
+            <div className=" flex gap-2">
+              <Input
+                label="Working Time"
+                value={workingTime}
+                onChange={(e) => setWorkingTime(e.target.value)}
+                error={!!errors.workingTime}
+              />
+              {errors.workingTime && (
+                <p className="text-red-500 text-sm">{errors.workingTime}</p>
+              )}
 
-            <Input
-              label="Phone Number"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              error={!!errors.phoneNumber}
-            />
-            {errors.phoneNumber && (
-              <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
-            )}
+              <Input
+                label="Phone Number"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                error={!!errors.phoneNumber}
+              />
+              {errors.phoneNumber && (
+                <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
+              )}
+            </div>
+
+            <div className=" flex gap-2">
+              <Input
+                label="Telegram"
+                value={telegram}
+                onChange={(e) => setTelegram(e.target.value)}
+              />
+
+              <Input
+                label="Instagram"
+                value={instagram}
+                onChange={(e) => setInstagram(e.target.value)}
+              />
+            </div>
 
             <Select
               label="Size of Establishment"
