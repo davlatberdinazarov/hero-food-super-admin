@@ -84,10 +84,16 @@ export default function SeeMoreDialog({ data }) {
                 alt="Establishment Banner"
               />
             </div>
-            <div className="mb-3">
-              <h4 className="text-sm text-gray-600">Egasi</h4>
-              <h1 className="font-semibold text-md">{ownerFullName}</h1>
-            </div>
+            <main className="flex mt-3">
+              <div className="w-1/2">
+                <h4 className="text-sm text-gray-600">Egasi</h4>
+                <h1 className="font-semibold text-md">{ownerFullName}</h1>
+              </div>
+              {/* <div className="w-1/2">
+                <h4 className="text-sm text-gray-600">Viloyat</h4>
+                <h1 className="font-semibold text-md">{region}</h1>
+              </div> */}
+            </main>
             <main className="flex mt-3">
               <div className="w-1/2">
                 <h4 className="text-sm text-gray-600">Kategoriya</h4>

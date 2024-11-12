@@ -8,33 +8,34 @@ import {
   Input,
   Select,
   Option,
+  Spinner,
 } from "@material-tailwind/react";
 import { FiUploadCloud } from "react-icons/fi";
 import { sweetAlert } from "../../utils/sweetalert";
 import $api from "../../utils/api";
 import useEstablishmentsStore from "../../stores/establishmentsStore";
-import { Spinner } from "@material-tailwind/react"; // Import a Spinner for loading indication
 import { useRenderStore } from "../../stores/rendersStore";
 
 export function AddFoodEstablishment() {
-  const [title, setTitle] = useState("");
-  const [ownerFullName, setOwnerFullName] = useState("");
-  const [address, setAddress] = useState("");
-  const [workingTime, setWorkingTime] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [telegram, setTelegram] = useState("");
-  const [instagram, setInstagram] = useState("");
-  const [sizeOfEstablishment, setSizeOfEstablishment] = useState("");
-  const [banner, setBanner] = useState(null);
-  const [loading, setLoading] = useState(false); // Loading state for the image upload
-  const [categoryId, setCategoryId] = useState("");
-  const [cityId, setCityId] = useState("");
-  const [regionId, setRegionId] = useState("");
-  const [open, setOpen] = useState(false); // Added open state for dialog
-  const [errors, setErrors] = useState({}); // Added errors state for validation feedback
+  const [formValues, setFormValues] = useState({
+    title: "",
+    ownerFullName: "",
+    address: "",
+    workingTime: "",
+    phoneNumber: "",
+    telegram: "",
+    instagram: "",
+    sizeOfEstablishment: "",
+    banner: null,
+    categoryId: "",
+    cityId: "",
+    regionId: "",
+  });
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const { foodEstablishmentRenderStore } = useRenderStore();
-
   const {
     regions,
     cities,
@@ -45,40 +46,47 @@ export function AddFoodEstablishment() {
     clearCities,
   } = useEstablishmentsStore();
 
+  console.log(cities)
+
   useEffect(() => {
     fetchRegions();
     fetchCategories();
   }, [fetchRegions, fetchCategories]);
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues((prevValues) => ({ ...prevValues, [name]: value }));
+  };
+
   const handleRegionChange = (e) => {
-    setRegionId(e);
+    setFormValues((prevValues) => ({ ...prevValues, regionId: e }));
     fetchCities(e);
   };
 
   const handleBannerChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setLoading(true); // Set loading state to true
-      setBanner(file);
-      // Simulate upload time delay for demo
-      setTimeout(() => setLoading(false), 1000); // Clear loading after 1 second
+      setLoading(true);
+      setFormValues((prevValues) => ({ ...prevValues, banner: file }));
+      setTimeout(() => setLoading(false), 1000); // Simulate upload
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
-    if (!title) newErrors.title = "Title is required";
-    if (!ownerFullName)
+    if (!formValues.title) newErrors.title = "Title is required";
+    if (!formValues.ownerFullName)
       newErrors.ownerFullName = "Owner's full name is required";
-    if (!address) newErrors.address = "Address is required";
-    if (!workingTime) newErrors.workingTime = "Working time is required";
-    if (!phoneNumber) newErrors.phoneNumber = "Phone number is required";
-    if (!sizeOfEstablishment)
+    if (!formValues.address) newErrors.address = "Address is required";
+    if (!formValues.workingTime)
+      newErrors.workingTime = "Working time is required";
+    if (!formValues.phoneNumber)
+      newErrors.phoneNumber = "Phone number is required";
+    if (!formValues.sizeOfEstablishment)
       newErrors.sizeOfEstablishment = "Size of establishment is required";
-    if (!categoryId) newErrors.categoryId = "Category is required";
-    if (!cityId) newErrors.cityId = "City is required";
-    if (!regionId) newErrors.regionId = "Region is required";
-
+    if (!formValues.categoryId) newErrors.categoryId = "Category is required";
+    if (!formValues.cityId) newErrors.cityId = "City is required";
+    if (!formValues.regionId) newErrors.regionId = "Region is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -86,32 +94,40 @@ export function AddFoodEstablishment() {
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
+    setLoading(true);
     const formData = new FormData();
-    formData.append("title", title);
-    formData.append("ownerFullName", ownerFullName);
-    formData.append("address", address);
-    formData.append("workingTime", workingTime);
-    formData.append("phoneNumber", phoneNumber);
-    formData.append("telegram", telegram);
-    formData.append("instagram", instagram);
-    formData.append("sizeOfEstablishment", sizeOfEstablishment);
-    formData.append("category", categoryId);
-    formData.append("city", cityId);
-    formData.append("region", regionId);
-    if (banner) formData.append("banner", banner);
+    Object.keys(formValues).forEach((key) => {
+      formData.append(key, formValues[key]);
+    });
 
     try {
       const response = await $api.post("/food-establishments/create", formData);
       if (response.status === 201) {
         sweetAlert("Food establishment added successfully!", "success");
         setOpen(false);
+        setFormValues({
+          title: "",
+          ownerFullName: "",
+          address: "",
+          workingTime: "",
+          phoneNumber: "",
+          telegram: "",
+          instagram: "",
+          sizeOfEstablishment: "",
+          banner: null,
+          categoryId: "",
+          cityId: "",
+          regionId: "",
+        });
         clearCities();
-        fetchCities(regionId);
-        foodEstablishmentRenderStore(); // Render store to update food establishment list
+        fetchCities(formValues.regionId);
+        foodEstablishmentRenderStore();
       }
     } catch (error) {
       console.error("Error creating food establishment:", error);
       sweetAlert("Failed to add food establishment.", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -122,11 +138,12 @@ export function AddFoodEstablishment() {
         <DialogHeader>Add Food Establishment</DialogHeader>
         <DialogBody>
           <div className="flex flex-col gap-3">
-            <div className=" flex gap-2">
+            <div className="flex gap-3">
               <Input
                 label="Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                name="title"
+                value={formValues.title}
+                onChange={handleChange}
                 error={!!errors.title}
               />
               {errors.title && (
@@ -135,40 +152,42 @@ export function AddFoodEstablishment() {
 
               <Input
                 label="Owner Full Name"
-                value={ownerFullName}
-                onChange={(e) => setOwnerFullName(e.target.value)}
+                name="ownerFullName"
+                value={formValues.ownerFullName}
+                onChange={handleChange}
                 error={!!errors.ownerFullName}
               />
               {errors.ownerFullName && (
                 <p className="text-red-500 text-sm">{errors.ownerFullName}</p>
               )}
             </div>
-
             <Input
               label="Address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
+              name="address"
+              value={formValues.address}
+              onChange={handleChange}
               error={!!errors.address}
             />
             {errors.address && (
               <p className="text-red-500 text-sm">{errors.address}</p>
             )}
 
-            <div className=" flex gap-2">
+            <div className="flex gap-3">
               <Input
                 label="Working Time"
-                value={workingTime}
-                onChange={(e) => setWorkingTime(e.target.value)}
+                name="workingTime"
+                value={formValues.workingTime}
+                onChange={handleChange}
                 error={!!errors.workingTime}
               />
               {errors.workingTime && (
                 <p className="text-red-500 text-sm">{errors.workingTime}</p>
               )}
-
               <Input
                 label="Phone Number"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
+                name="phoneNumber"
+                value={formValues.phoneNumber}
+                onChange={handleChange}
                 error={!!errors.phoneNumber}
               />
               {errors.phoneNumber && (
@@ -176,28 +195,37 @@ export function AddFoodEstablishment() {
               )}
             </div>
 
-            <div className=" flex gap-2">
+            <div className="flex gap-3">
               <Input
                 label="Telegram"
-                value={telegram}
-                onChange={(e) => setTelegram(e.target.value)}
+                name="telegram"
+                value={formValues.telegram}
+                onChange={handleChange}
               />
 
               <Input
                 label="Instagram"
-                value={instagram}
-                onChange={(e) => setInstagram(e.target.value)}
+                name="instagram"
+                value={formValues.instagram}
+                onChange={handleChange}
               />
             </div>
 
             <Select
               label="Size of Establishment"
-              onChange={(e) => setSizeOfEstablishment(e)}
+              name="sizeOfEstablishment"
+              value={formValues.sizeOfEstablishment}
+              onChange={(e) =>
+                setFormValues((prevValues) => ({
+                  ...prevValues,
+                  sizeOfEstablishment: e,
+                }))
+              }
               error={!!errors.sizeOfEstablishment}
             >
               <Option value="small">Small</Option>
               <Option value="medium">Medium</Option>
-              <Option value="huge">Large</Option>
+              <Option value="large">Large</Option>
             </Select>
             {errors.sizeOfEstablishment && (
               <p className="text-red-500 text-sm">
@@ -207,6 +235,8 @@ export function AddFoodEstablishment() {
 
             <Select
               label="Region"
+              name="regionId"
+              value={formValues.regionId}
               onChange={handleRegionChange}
               error={!!errors.regionId}
             >
@@ -222,7 +252,14 @@ export function AddFoodEstablishment() {
 
             <Select
               label="City"
-              onChange={(e) => setCityId(e)}
+              name="cityId"
+              value={formValues.cityId}
+              onChange={(value) =>
+                setFormValues((prevValues) => ({
+                  ...prevValues,
+                  cityId: value,
+                }))
+              }
               error={!!errors.cityId}
             >
               {cities.map((city) => (
@@ -237,7 +274,14 @@ export function AddFoodEstablishment() {
 
             <Select
               label="Category"
-              onChange={(e) => setCategoryId(e)}
+              name="categoryId"
+              value={formValues.categoryId}
+              onChange={(e) =>
+                setFormValues((prevValues) => ({
+                  ...prevValues,
+                  categoryId: e,
+                }))
+              }
               error={!!errors.categoryId}
             >
               {categories.map((category) => (
@@ -275,116 +319,3 @@ export function AddFoodEstablishment() {
     </>
   );
 }
-
-/* 
- <Input
-              label="Title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              error={!!errors.title}
-            />
-            {errors.title && (
-              <p className="text-red-500 text-sm">{errors.title}</p>
-            )}
-
-            <Input
-              label="Owner Full Name"
-              value={ownerFullName}
-              onChange={(e) => setOwnerFullName(e.target.value)}
-              error={!!errors.ownerFullName}
-            />
-            {errors.ownerFullName && (
-              <p className="text-red-500 text-sm">{errors.ownerFullName}</p>
-            )}
-
-            <Input
-              label="Address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              error={!!errors.address}
-            />
-            {errors.address && (
-              <p className="text-red-500 text-sm">{errors.address}</p>
-            )}
-
-            <Input
-              label="Working Time"
-              value={workingTime}
-              onChange={(e) => setWorkingTime(e.target.value)}
-              error={!!errors.workingTime}
-            />
-            {errors.workingTime && (
-              <p className="text-red-500 text-sm">{errors.workingTime}</p>
-            )}
-
-            <Input
-              label="Phone Number"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              error={!!errors.phoneNumber}
-            />
-            {errors.phoneNumber && (
-              <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
-            )}
-
-            <Select
-              label="Size of Establishment"
-              onChange={(e) => setSizeOfEstablishment(e)}
-              error={!!errors.sizeOfEstablishment}
-            >
-              <Option value="small">Small</Option>
-              <Option value="medium">Medium</Option>
-              <Option value="huge">Large</Option>
-            </Select>
-            {errors.sizeOfEstablishment && (
-              <p className="text-red-500 text-sm">
-                {errors.sizeOfEstablishment}
-              </p>
-            )}
-
-            <Select
-              label="Region"
-              onChange={handleRegionChange}
-              error={!!errors.regionId}
-            >
-              {regions.map((region) => (
-                <Option key={region.id} value={region.id}>
-                  {region.name}
-                </Option>
-              ))}
-            </Select>
-            {errors.regionId && (
-              <p className="text-red-500 text-sm">{errors.regionId}</p>
-            )}
-
-            <Select
-              label="City"
-              onChange={(e) => setCityId(e)}
-              error={!!errors.cityId}
-            >
-              {cities.map((city) => (
-                <Option key={city.id} value={city.id}>
-                  {city.name}
-                </Option>
-              ))}
-            </Select>
-            {errors.cityId && (
-              <p className="text-red-500 text-sm">{errors.cityId}</p>
-            )}
-
-            <Select
-              label="Category"
-              onChange={(e) => setCategoryId(e)}
-              error={!!errors.categoryId}
-            >
-              {categories.map((category) => (
-                <Option key={category.id} value={category.id}>
-                  {category.name}
-                </Option>
-              ))}
-            </Select>
-            {errors.categoryId && (
-              <p className="text-red-500 text-sm">{errors.categoryId}</p>
-            )}
-
-*/
