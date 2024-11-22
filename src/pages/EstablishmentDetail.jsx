@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import $api from "../utils/api"; // API utilingizni moslashtiring
 import Loader from "../lib/Loader";
 import { BASE_URL } from "../utils";
-import { Button } from "@material-tailwind/react";
 import { useParams } from "react-router-dom";
 import { useRenderStore } from "../stores/rendersStore";
 import AddDetailDialog from "../components/detail/add-detail";

@@ -22,7 +22,7 @@ import MenuCategory from "./pages/FoodEstablishments/MenuCategory";
 import { Promotions } from "./pages/FoodEstablishments/Promotions";
 import Foods from "./pages/FoodEstablishments/Foods";
 import Users from "./pages/Users/Users";
-import EstablishmentDetail from "./pages/establishmentDetail";
+import EstablishmentDetail from "./pages/EstablishmentDetail";
 
 
 const AppRoutes = () => {
