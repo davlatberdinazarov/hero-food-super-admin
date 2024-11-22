@@ -1,7 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Card, CardHeader, CardBody, CardFooter } from '@material-tailwind/react';
+import { $axios } from '../utils';
+import $api from '../utils/api';
 
 export default function MainPage() {
+  const [foodEs, setFoodEs] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loading1, setLoading1] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchFoodEs = async () => {
+      try {
+        const response = await $axios.get('/food-establishments/all');
+        if (response.status === 200) {
+          setFoodEs(response.data);
+          setLoading(false);
+        }
+      } catch (error) {
+        setLoading(false);
+      }
+    }
+
+    const getUsers = async () => {
+      try {
+        const response = await $api.get('/users/all')
+        if (response.status === 200) {
+          setUsers(response.data);
+          setLoading1(false);
+        }
+      } catch (error) {
+        setLoading1(false);
+        setError(error);
+      }
+    };
+    getUsers();
+    fetchFoodEs();
+  }, [])
+
   return (
     <div className="flex h-full">
 
@@ -17,43 +54,17 @@ export default function MainPage() {
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="bg-white p-4 shadow-lg">
             <CardBody>
-              <h2 className="text-xl font-semibold mb-2">Total Orders</h2>
-              <p className="text-3xl font-bold">1,234</p>
+              <h2 className="text-xl font-semibold mb-2">Umumiy ovqatlanish maskanlari</h2>
+              <p className="text-3xl font-bold">{ loading ? 'loading...' : foodEs.length }</p>
             </CardBody>
           </Card>
           <Card className="bg-white p-4 shadow-lg">
             <CardBody>
               <h2 className="text-xl font-semibold mb-2">Total Customers</h2>
-              <p className="text-3xl font-bold">567</p>
+              <p className="text-3xl font-bold">{ loading1 ? 'loadng...' : users.length }</p>
             </CardBody>
           </Card>
-          <Card className="bg-white p-4 shadow-lg">
-            <CardBody>
-              <h2 className="text-xl font-semibold mb-2">Top Dish</h2>
-              <p className="text-lg">Spicy Chicken</p>
-            </CardBody>
-          </Card>
-        </section>
-
-        {/* Restaurants Section */}
-        <section>
-          <h2 className="text-2xl font-semibold mb-6">Restaurants</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Example restaurant card */}
-            <Card className="bg-white shadow-lg">
-              <CardHeader color="blue" className="relative h-56">
-                <img src="/restaurant-image.jpg" alt="Restaurant" className="h-full w-full object-cover" />
-              </CardHeader>
-              <CardBody className="text-center">
-                <h2 className="text-lg font-bold">Restaurant Name</h2>
-                <p className="text-gray-600">Location: Downtown</p>
-              </CardBody>
-              <CardFooter divider className="flex items-center justify-between py-3">
-                <Button color="blue" size="sm">Edit</Button>
-                <Button color="red" size="sm">Delete</Button>
-              </CardFooter>
-            </Card>
-          </div>
+         
         </section>
       </main>
     </div>

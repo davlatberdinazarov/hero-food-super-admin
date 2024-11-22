@@ -21,21 +21,22 @@ export default function EstablishmentDetail() {
         const response = await $api.get(
           `/establishment-detail/by-food-establishment/${foodEsId}`
         );
-        if (response.status === 200) {
+        if (response.status >= 200 && response.status < 300) {
           setEstablishments(response.data);
           setLoading(false);
         }
       } catch (error) {
         console.error("Failed to fetch establishments", error);
+        setLoading(false);
       }
     };
 
     fetchEstablishments();
   }, [detailRender]);
 
-  if (loading) {
-    return <Loader loading={loading} />;
-  }
+  // if (loading) {
+  //   return <Loader loading={loading} />;
+  // }
 
   return (
     <div className="p-4">
@@ -44,6 +45,7 @@ export default function EstablishmentDetail() {
         <AddDetailDialog/>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        { loading ? <Loader /> : null}
         {establishments.map((establishment) => (
           <div
             key={establishment.id}
